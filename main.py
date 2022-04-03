@@ -15,11 +15,11 @@ print("Bot started")
 
 @client.on(telethon.events.NewMessage(pattern="^/start"))
 async def start(event):
-    await event.reply("Hello, I'm a bot to search chats and channels from given query!", buttons=[Button.url("Source", "https://github.com/TechiError/TG-searcherBot"), Button.url("Join @TechiError", "https://t.me/TechiError")])
+    await event.reply("Merhaba, verilen sorgudan sohbetleri ve kanalları aramak için bir botum", buttons=[Button.url("Sahip", "https://t.me/kamileecher"), Button.url("Channel", "https://t.me/kamileecherch")])
 
 @client.on(telethon.events.NewMessage(pattern="^/search"))
 async def search(event):
-    msg = await event.respond("Searching...")
+    msg = await event.respond("Aranıyor...")
     async with aiohttp.ClientSession() as session:
         start = 1
         async with session.get(f"https://content-customsearch.googleapis.com/customsearch/v1?cx=ec8db9e1f9e41e65e&q={event.text.split()[1]}&key=AIzaSyAa8yy0GdcGPHdtD083HiGGx_S0vMPScDM&start={start}", headers={"x-referer": "https://explorer.apis.google.com"}) as r:
@@ -27,7 +27,7 @@ async def search(event):
             result = ""
             
             if not response.get("items"):
-                return await msg.edit("No results found!")
+                return await msg.edit("Sonuç Yok!")
             for item in response["items"]:
                 title = item["title"]
                 link = item["link"]
@@ -41,7 +41,7 @@ async def search(event):
                     # remove duplicates
                     continue
                 result += f"{title}\n{link}\n\n"
-            prev_and_next_btns = [Button.inline("▶️Next▶️", data=f"next {start+10} {event.text.split()[1]}")]
+            prev_and_next_btns = [Button.inline("▶️ Ileri", data=f"next {start+10} {event.text.split()[1]}")]
             await msg.edit(result, link_preview=False, buttons=prev_and_next_btns)
             await session.close()
 
@@ -52,7 +52,7 @@ async def prev(event):
         async with session.get(f"https://content-customsearch.googleapis.com/customsearch/v1?cx=ec8db9e1f9e41e65e&q={(event.data.split()[2]).decode('utf-8')}&key=AIzaSyAa8yy0GdcGPHdtD083HiGGx_S0vMPScDM&start={start}", headers={"x-referer": "https://explorer.apis.google.com"}) as r:
             response = await r.json()
             if response.get("error"):
-                return await event.answer("No more results!")
+                return await event.answer("Başka Sonuç Yok!")
             result = ""            
             for item in response["items"]:
                 title = item["title"]
@@ -67,7 +67,7 @@ async def prev(event):
                     # remove duplicates
                     continue
                 result += f"{title}\n{link}\n\n"
-            prev_and_next_btns = [Button.inline("◀️Prev◀️", data=f"prev {start-10} {event.data.split()[2].decode('utf-8')}"), Button.inline("▶️Next▶️", data=f"next {start+10} {event.data.split()[2].decode('utf-8')}")]
+            prev_and_next_btns = [Button.inline("◀️ Geri", data=f"prev {start-10} {event.data.split()[2].decode('utf-8')}"), Button.inline("▶️ Ileri", data=f"next {start+10} {event.data.split()[2].decode('utf-8')}")]
             await event.edit(result, link_preview=False, buttons=prev_and_next_btns)
             await session.close()
 
@@ -79,7 +79,7 @@ async def next(event):
             response = await r.json()
             print(response["searchInformation"]["totalResults"])
             if response["searchInformation"]["totalResults"] == "0":
-                return await event.answer("No more results!")
+                return await event.answer("Başka Sonuç Yok!")
             result = ""
             for item in response["items"]:
                 title = item["title"]
@@ -94,7 +94,7 @@ async def next(event):
                     # remove duplicates
                     continue
                 result += f"{title}\n{link}\n\n"
-            prev_and_next_btns = [Button.inline("◀️Prev◀️", data=f"prev {start-10} {(event.data.split()[2]).decode('utf-8')}"), Button.inline("▶️Next▶️", data=f"next {start+10} {(event.data.split()[2]).decode('utf-8')}")]
+            prev_and_next_btns = [Button.inline("◀️ Geri", data=f"prev {start-10} {(event.data.split()[2]).decode('utf-8')}"), Button.inline("▶️ Ileri", data=f"next {start+10} {(event.data.split()[2]).decode('utf-8')}")]
             await event.edit(result, link_preview=False, buttons=prev_and_next_btns)
             await session.close()
 
